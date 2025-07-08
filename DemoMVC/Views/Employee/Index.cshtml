@@ -1,2 +1,38 @@
-<h2>Danh sách Employee</h2>
-<p>Nội dung của trang Index của EmployeeController.</p>
+@using DemoMVC.Models
+@model IEnumerable<Employee>
+
+@{
+    ViewData["Title"] = "Employee List";
+}
+
+<h1>Employee List</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New Employee</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Employee ID</th>
+            <th>Full Name</th>
+            <th>Address</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model)
+        {
+            <tr>
+                <td>@employee.EmployeeId</td>
+                <td>@employee.FullName</td>
+                <td>@employee.Address</td>
+                <td>@employee.Age</td>
+                <td>
+                    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@employee.EmployeeId">Edit</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@employee.EmployeeId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
