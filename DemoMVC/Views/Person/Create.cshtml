@@ -8,22 +8,23 @@
 
 <h4>Person</h4>
 <hr/>
-<div class="="row">
-    <div class="="col-md-4">
-        <form asp-validation-summary="ModeOnly" class="="text-danger">
+<div class="row">
+    <div class="col-md-4">
+        <form asp-validation-summary="ModeOnly" class="text-danger">
             <div class="form-group">
-                <label asp-for="PersonId" class="control-lable"></label>
-                <input asp-asp-for="PersonId" class="form-control"/>
+                <label asp-for="PersonId" class="control-label"></label>
+                @* <input asp-for="PersonId" class="form-control"/> *@
+                <input value="@ViewBag.newPersonId = newPersonId" readonly/>
                 <span asp-validation-for="PersonId" class="text-danger"></span>
             </div>
             <div class="form-group">
-               <label asp-for="FullName" class="control-lable"></label>
-                <input asp-asp-for="FullName" class="form-control"/>
+               <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control"/>
                 <span asp-validation-for="FullName" class="text-danger"></span> 
             </div>
             <div class="form-group">
-                <label asp-for="Address" class="control-lable"></label>
-                <input asp-asp-for="Address" class="form-control"/>
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control"/>
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">

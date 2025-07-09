@@ -1,25 +1,35 @@
+using System.Text.RegularExpressions;
 using DemoMVC.Data;
 using DemoMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace MvcMovie.Controllers
+namespace DemoMVC.Controllers
 {
-    public class PersonController : Controller
+    public class PersonController(ApplicationDbcontext context, AutoGenerateCode autoGenerateCode) : Controller
     {
-        private readonly ApplicationDbcontext _context;
-        public PersonController(ApplicationDbcontext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbcontext _context = context;
+        private readonly AutoGenerateCode _autoGenerateCode = autoGenerateCode;
         public async Task<IActionResult> Index()
         {
-            var model = await _context.Person.ToListAsync();
-            return View(model);
+            var list = await _context.Person.ToListAsync();
+            return View(list);
         }
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            string newID = "PS001";
+            var lastPerson = await _context.Person
+            .OrderByDescending(p => p.PersonId)
+            .FirstOrDefaultAsync();
+
+            if (lastPerson != null && Regex.IsMatch(lastPerson.PersonId!, @"^PS\d{3}$"))
+            {
+                int number = int.Parse(lastPerson.PersonId!.Substring(2));
+                newID = "PS" + (number + 1).ToString("D3");
+            }
+            var PersonId = lastPerson?.PersonId ?? "PS0000";
+            var newPersonId = _autoGenerateCode.GenerateCode(PersonId);
+            ViewBag.newPersonId = newPersonId;
             return View();
         }
         [HttpPost]
@@ -111,6 +121,5 @@ namespace MvcMovie.Controllers
         {
             return (_context.Person?.Any(e => e.PersonId == id)).GetValueOrDefault();
         }
-    
     }
 }
