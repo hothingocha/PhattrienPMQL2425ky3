@@ -1,28 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Data;
 using DemoMVC.Models;
 
 namespace DemoMVC.Controllers
 {
-    public class DaiLyController : Controller
+    public class HeThongPhanPhoiController : Controller
     {
         private readonly ApplicationDbcontext _context;
 
-        public DaiLyController(ApplicationDbcontext context)
+        public HeThongPhanPhoiController(ApplicationDbcontext context)
         {
             _context = context;
         }
 
-        // GET: DaiLy
+        // GET: HeThongPhanPhoi
         public async Task<IActionResult> Index()
         {
-            var applicationDbcontext = _context.DaiLy.Include(d => d.HeThongPhanPhoi);
-            return View(await applicationDbcontext.ToListAsync());
+            return View(await _context.HeThongPhanPhoi.ToListAsync());
         }
 
-        // GET: DaiLy/Details/5
+        // GET: HeThongPhanPhoi/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -30,42 +28,39 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var daiLy = await _context.DaiLy
-                .Include(d => d.HeThongPhanPhoi)
-                .FirstOrDefaultAsync(m => m.MaDaiLy == id);
-            if (daiLy == null)
+            var heThongPhanPhoi = await _context.HeThongPhanPhoi
+                .FirstOrDefaultAsync(m => m.MaHTPP == id);
+            if (heThongPhanPhoi == null)
             {
                 return NotFound();
             }
 
-            return View(daiLy);
+            return View(heThongPhanPhoi);
         }
 
-        // GET: DaiLy/Create
+        // GET: HeThongPhanPhoi/Create
         public IActionResult Create()
         {
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP");
             return View();
         }
 
-        // POST: DaiLy/Create
+        // POST: HeThongPhanPhoi/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MaDaiLy,TenDaiLy,DiaChi,NguoiDaiDien,DienThoai,MaHTPP")] DaiLy daiLy)
+        public async Task<IActionResult> Create([Bind("MaHTPP,TenHTPP")] HeThongPhanPhoi heThongPhanPhoi)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(daiLy);
+                _context.Add(heThongPhanPhoi);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
-            return View(daiLy);
+            return View(heThongPhanPhoi);
         }
 
-        // GET: DaiLy/Edit/5
+        // GET: HeThongPhanPhoi/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -73,23 +68,22 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var daiLy = await _context.DaiLy.FindAsync(id);
-            if (daiLy == null)
+            var heThongPhanPhoi = await _context.HeThongPhanPhoi.FindAsync(id);
+            if (heThongPhanPhoi == null)
             {
                 return NotFound();
             }
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
-            return View(daiLy);
+            return View(heThongPhanPhoi);
         }
 
-        // POST: DaiLy/Edit/5
+        // POST: HeThongPhanPhoi/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("MaDaiLy,TenDaiLy,DiaChi,NguoiDaiDien,DienThoai,MaHTPP")] DaiLy daiLy)
+        public async Task<IActionResult> Edit(string id, [Bind("MaHTPP,TenHTPP")] HeThongPhanPhoi heThongPhanPhoi)
         {
-            if (id != daiLy.MaDaiLy)
+            if (id != heThongPhanPhoi.MaHTPP)
             {
                 return NotFound();
             }
@@ -98,12 +92,12 @@ namespace DemoMVC.Controllers
             {
                 try
                 {
-                    _context.Update(daiLy);
+                    _context.Update(heThongPhanPhoi);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DaiLyExists(daiLy.MaDaiLy))
+                    if (!HeThongPhanPhoiExists(heThongPhanPhoi.MaHTPP))
                     {
                         return NotFound();
                     }
@@ -114,11 +108,10 @@ namespace DemoMVC.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaHTPP"] = new SelectList(_context.HeThongPhanPhoi, "MaHTPP", "MaHTPP", daiLy.MaHTPP);
-            return View(daiLy);
+            return View(heThongPhanPhoi);
         }
 
-        // GET: DaiLy/Delete/5
+        // GET: HeThongPhanPhoi/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -126,35 +119,34 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            var daiLy = await _context.DaiLy
-                .Include(d => d.HeThongPhanPhoi)
-                .FirstOrDefaultAsync(m => m.MaDaiLy == id);
-            if (daiLy == null)
+            var heThongPhanPhoi = await _context.HeThongPhanPhoi
+                .FirstOrDefaultAsync(m => m.MaHTPP == id);
+            if (heThongPhanPhoi == null)
             {
                 return NotFound();
             }
 
-            return View(daiLy);
+            return View(heThongPhanPhoi);
         }
 
-        // POST: DaiLy/Delete/5
+        // POST: HeThongPhanPhoi/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var daiLy = await _context.DaiLy.FindAsync(id);
-            if (daiLy != null)
+            var heThongPhanPhoi = await _context.HeThongPhanPhoi.FindAsync(id);
+            if (heThongPhanPhoi != null)
             {
-                _context.DaiLy.Remove(daiLy);
+                _context.HeThongPhanPhoi.Remove(heThongPhanPhoi);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DaiLyExists(string id)
+        private bool HeThongPhanPhoiExists(string id)
         {
-            return _context.DaiLy.Any(e => e.MaDaiLy == id);
+            return _context.HeThongPhanPhoi.Any(e => e.MaHTPP == id);
         }
     }
 }

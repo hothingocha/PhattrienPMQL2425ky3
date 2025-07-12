@@ -1,5 +1,6 @@
 using DemoMVC.Data;
 using DemoMVC.Models;
+using DemoMVC.Models.Process;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ builder.Services.AddDbContext<ApplicationDbcontext>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<AutoGenerateCode>();
+builder.Services.AddScoped<AutoGenerateId>();
 
 var app = builder.Build();
 

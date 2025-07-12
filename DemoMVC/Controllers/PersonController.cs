@@ -1,36 +1,39 @@
-using System.Text.RegularExpressions;
 using DemoMVC.Data;
 using DemoMVC.Models;
+using DemoMVC.Models.Process;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DemoMVC.Controllers
 {
-    public class PersonController(ApplicationDbcontext context, AutoGenerateCode autoGenerateCode) : Controller
+    public class PersonController : Controller
     {
-        private readonly ApplicationDbcontext _context = context;
-        private readonly AutoGenerateCode _autoGenerateCode = autoGenerateCode;
+        private readonly ApplicationDbcontext _context;
+        public PersonController(ApplicationDbcontext context)
+        {
+            _context = context;
+        }
+        //GET: Person
         public async Task<IActionResult> Index()
         {
-            var list = await _context.Person.ToListAsync();
-            return View(list);
+            return View(await _context.Persons.ToListAsync());
         }
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            string newID = "PS001";
-            var lastPerson = await _context.Person
-            .OrderByDescending(p => p.PersonId)
-            .FirstOrDefaultAsync();
-
-            if (lastPerson != null && Regex.IsMatch(lastPerson.PersonId!, @"^PS\d{3}$"))
+            //1. lay ra ban ghi moi nhat cua Person
+            var person = _context.Persons.OrderByDescending(p => p.PersonId).FirstOrDefault();
+            //2. Neu person == null thi gan PersonId = PS0
+            var personId = person == null ? "PS0" : person.PersonId;
+            //3. goi toi phuowng thuc sinh id tu dong
+            var autoGenerateId = new AutoGenerateId();
+            var newPersonId = autoGenerateId.GenerateId(personId);
+            var newPerson = new Person
             {
-                int number = int.Parse(lastPerson.PersonId!.Substring(2));
-                newID = "PS" + (number + 1).ToString("D3");
-            }
-            var PersonId = lastPerson?.PersonId ?? "PS0000";
-            var newPersonId = _autoGenerateCode.GenerateCode(PersonId);
-            ViewBag.newPersonId = newPersonId;
-            return View();
+                PersonId = newPersonId
+            };
+            return View(newPerson);
+
+
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -46,11 +49,11 @@ namespace DemoMVC.Controllers
         }
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.Person == null)
+            if (id == null || _context.Persons == null)
             {
                 return NotFound();
             }
-            var person = await _context.Person.FindAsync(id);
+            var person = await _context.Persons.FindAsync(id);
             if (person == null)
             {
                 return NotFound();
@@ -89,11 +92,11 @@ namespace DemoMVC.Controllers
         }
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.Person == null)
+            if (id == null || _context.Persons == null)
             {
                 return NotFound();
             }
-            var person = await _context.Person
+            var person = await _context.Persons
             .FirstOrDefaultAsync(m => m.PersonId == id);
             if (person == null)
             {
@@ -105,21 +108,21 @@ namespace DemoMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Person == null)
+            if (_context.Persons == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Person' is null.");
             }
-            var person = await _context.Person.FindAsync(id);
+            var person = await _context.Persons.FindAsync(id);
             if (person != null)
             {
-                _context.Person.Remove(person);
+                _context.Persons.Remove(person);
             }
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         private bool PersonExists(string id)
         {
-            return (_context.Person?.Any(e => e.PersonId == id)).GetValueOrDefault();
+            return (_context.Persons?.Any(e => e.PersonId == id)).GetValueOrDefault();
         }
     }
 }
